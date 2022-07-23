@@ -10,7 +10,7 @@ Example entry:
 
 import sys, re, os, time
 
-rx_class = re.compile(r"\s+class\s+(\w+)")
+rx_class = re.compile(r"\bclass\s+(\w+)")
 
 def main():
   tags = []
@@ -34,10 +34,13 @@ def main():
 
   print(f"Done in {time.time() - start_time}")
 
-def add_class_tag(file_name, line, tags):
+def parse_class(line):
   match = rx_class.search(line)
-  if match:
-    tag = match.group(1)
+  return match.group(1) if match else None
+
+def add_class_tag(file_name, line, tags):
+  tag = parse_class(line)
+  if tag:
     tags.append("\t".join([tag, file_name, rf"/class\s\+{tag}/"]))
 
 def get_tags_for_file(file_name):
