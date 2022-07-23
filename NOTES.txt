@@ -1,0 +1,27 @@
+So it looks like the C# extension from Omnisharp connects to a locally running
+Omnisharp application, and broadcasts messages (as low-level packets) back and
+forth to the Omnisharp process.
+
+PacketCommand is what is sent with each (?) message to the server. The server
+responds with that command type and a sequence ID.
+
+The server URL for _something_ is https://roslynomnisharp.blob.core.windows.net
+The version info path is https://roslynomnisharp.blob.core.windows.net/releases/versioninfo.txt
+
+Looks like Omnisharp can be installed as a Vim Plugin here
+https://github.com/OmniSharp/omnisharp-vim
+
+It looks like the Omnisharp server can be found/downloaded here
+https://github.com/OmniSharp/omnisharp-roslyn
+
+How Vim tags work:
+^]              - Jump to function definition
+g]              - List all of the tag matches
+^t              - Return to previous location after a tag jump
+:tag /<pattern> - list all tags matching a specified pattern
+
+In Roslyn, I think this class is used for extracting a basic method:
+SourceOrdinaryMethodSymbol
+
+This class is used for determining the MEANING behind the parsed syntax tokens
+src/Compilers/CSharp/Portable/Parser/LanguageParser.cs
