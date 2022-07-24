@@ -8,7 +8,7 @@ class_tests = [
   ("public class a { }", "a"),
   ("[attr1] [attr2] class a { }", "a"),
   ("class a : b { }", "a"),
-  ("class a<b> where b : c { }", "a<b>"),
+  ("class a<b> where b : c { }", "a"),
 ]
 
 method_tests = [
@@ -24,6 +24,13 @@ method_tests = [
   ("var m = M()", None),
 ]
 
+interface_tests = [
+  ("interface a { }", "a"),
+  ("public interface a { }", "a"),
+  ("interface a : b { }", "a"),
+  ("interface a<b> where b : c { }", "a"),
+]
+
 for test_case, expectation  in class_tests:
   actual = cst.parse_class(test_case)
   assert expectation == actual, f"{test_case} -> {expectation} != {actual}"
@@ -35,3 +42,9 @@ for test_case, expectation  in method_tests:
   assert expectation == actual, f"{test_case} -> {expectation} != {actual}"
 
 print("'method' parsing works")
+
+for test_case, expectation  in interface_tests:
+  actual = cst.parse_interface(test_case)
+  assert expectation == actual, f"{test_case} -> {expectation} != {actual}"
+
+print("'interface' parsing works")

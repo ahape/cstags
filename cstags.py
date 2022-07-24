@@ -4,6 +4,7 @@ import sys, re, os, time, glob
 r_name = r"[a-zA-Z0-9_<>]+"
 r_name_attr = r"[a-zA-Z0-9_<>\[\]]+"
 rx_class = re.compile(fr"^\s*(?:{r_name_attr}\s+)*class\s+({r_name})")
+rx_interface = re.compile(fr"^\s*(?:{r_name}\s+)*interface\s+({r_name})")
 rx_method = re.compile(fr"^\s*({r_name_attr}\s+)+({r_name}\(.*\))")
 
 def main():
@@ -45,25 +46,35 @@ def get_tags_for_directory(directory=None):
 def parse_class(line):
   match = rx_class.search(line)
   if match:
-    return match.group(1)
-  return None
+    return sanitize_capture(match.group(1))
+
+def parse_interface(line):
+  match = rx_interface.search(line)
+  if match:
+    return sanitize_capture(match.group(1))
 
 def parse_method(line):
   match = rx_method.search(line)
   if match:
-    capture = match.group(2)
-    for symbol in ["<", "("]:
-      index = capture.find(symbol)
-      if index > -1:
-        return capture[:index]
-    return capture
-  return None
+    return sanitize_capture(match.group(2))
+
+def sanitize_capture(capture):
+  if not capture:
+    return None
+  for symbol in ["<", "("]:
+    index = capture.find(symbol)
+    if index > -1:
+      return capture[:index]
+  return capture
 
 def add_class_tag(file_name, line, line_num, tags):
   add_tag(parse_class(line), file_name, line_num, tags)
 
 def add_method_tag(file_name, line, line_num, tags):
   add_tag(parse_method(line), file_name, line_num, tags)
+
+def add_interface_tag(file_name, line, line_num, tags):
+  add_tag(parse_interface(line), file_name, line_num, tags)
 
 def add_tag(tag, file_name, line_num, tags):
   if tag:
@@ -82,6 +93,7 @@ def get_tags_for_file(file_name):
         break
       add_class_tag(file_name, line, line_num, tags)
       add_method_tag(file_name, line, line_num, tags)
+      add_interface_tag(file_name, line, line_num, tags)
       line_num += 1
     return tags
 
