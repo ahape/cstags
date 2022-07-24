@@ -1,17 +1,4 @@
 #!/usr/bin/python3
-"""
-V1:
-- Go through each file
-- Create a tag for each CLASS
-
-Example entry:
-  [name_of_the_tag] [path/to/file] /public <match_expression>/
-
-V2:
-- Go through each file
-- Create a tag for each METHOD
-"""
-
 import sys, re, os, time
 
 r_name = r"[a-zA-Z0-9_<>]+"
@@ -54,7 +41,7 @@ def parse_method(line):
     for symbol in ["<", "("]:
       index = capture.find(symbol)
       if index > -1:
-        capture = capture[:index]
+        return capture[:index]
     return capture
   return None
 
