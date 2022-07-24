@@ -8,6 +8,7 @@ rx_interface = re.compile(fr"^\s*(?:{r_name}\s+)*interface\s+({r_name})")
 rx_method = re.compile(fr"^\s*({r_name_attr}\s+)+({r_name}\(.*\))")
 
 files_scanned = 0
+dirs_to_exclude = [re.compile(r"^\."), "node_modules", "bin", "obj", "Properties", "packages"]
 
 def main():
   tags = []
@@ -42,8 +43,15 @@ def get_tags_for_directory(directory=None):
     if os.path.isfile(abs_path) and item.endswith(".cs"):
       tags += get_tags_for_file(abs_path)
     elif os.path.isdir(abs_path):
-      tags += get_tags_for_directory(abs_path)
+      if not should_exclude_dir(abs_path):
+        tags += get_tags_for_directory(abs_path)
   return tags
+
+def should_exclude_dir(path):
+  for pattern in dirs_to_exclude:
+    if pattern.match(path) if type(pattern) == re.Pattern else path == pattern:
+      return True
+  return False
 
 def parse_class(line):
   match = rx_class.search(line)
