@@ -3,7 +3,7 @@ import sys, re, os, time, glob
 
 r_name = r"[a-zA-Z0-9_<>]+"
 r_name_attr = r"[a-zA-Z0-9_<>\[\]]+"
-rx_class = re.compile(fr"\bclass\s+({r_name})")
+rx_class = re.compile(fr"^\s*(?:{r_name_attr}\s+)*class\s+({r_name})")
 rx_method = re.compile(fr"^\s*({r_name_attr}\s+)+({r_name}\(.*\))")
 
 def main():
@@ -44,7 +44,9 @@ def get_tags_for_directory(directory=None):
 
 def parse_class(line):
   match = rx_class.search(line)
-  return match.group(1) if match else None
+  if match:
+    return match.group(1)
+  return None
 
 def parse_method(line):
   match = rx_method.search(line)
@@ -58,12 +60,12 @@ def parse_method(line):
   return None
 
 def add_class_tag(file_name, line, line_num, tags):
-  tag = parse_class(line)
-  if tag:
-    tags.append("\t".join([tag, file_name, rf"/class\s\+{tag}/"]))
+  add_tag(parse_class(line), file_name, line_num, tags)
 
 def add_method_tag(file_name, line, line_num, tags):
-  tag = parse_method(line)
+  add_tag(parse_method(line), file_name, line_num, tags)
+
+def add_tag(tag, file_name, line_num, tags):
   if tag:
     tags.append("\t".join([tag, file_name, str(line_num)]))
 
