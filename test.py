@@ -8,7 +8,19 @@ class_tests = [
   ("public class a { }", "a"),
   ("[attr1] [attr2] class a { }", "a"),
   ("class a : b { }", "a"),
-  ("class a<b> where b : c { }", "a"),
+  ("class a<b> where b : c { }", "a<b>"),
+]
+
+method_tests = [
+  ("void M() { }", "M"),
+  ("ref b M() { }", "M"),
+  ("ref readonly b M() { }", "M"),
+  ("b<c> M() { }", "M"),
+  ("b<c> M(A a) { }", "M"),
+  ("b<c> M(A a, B b) { }", "M"),
+  ("b M<c>() where b : d { }", "M"),
+  ("void M() => { }", "M"),
+  ("[attr1] [attr2] void M() => { }", "M"),
 ]
 
 for test_case, expectation  in class_tests:
@@ -16,3 +28,9 @@ for test_case, expectation  in class_tests:
   assert expectation == actual, f"{expectation} != {actual}"
 
 print("'class' parsing works")
+
+for test_case, expectation  in method_tests:
+  actual = cst.parse_method(test_case)
+  assert expectation == actual, f"{expectation} != {actual}"
+
+print("'method' parsing works")
