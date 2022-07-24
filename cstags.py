@@ -1,24 +1,23 @@
 #!/usr/bin/python3
-import sys, re, os, time
+import sys, re, os, time, glob
 
 r_name = r"[a-zA-Z0-9_<>]+"
 r_name_attr = r"[a-zA-Z0-9_<>\[\]]+"
 rx_class = re.compile(fr"\bclass\s+({r_name})")
-rx_method = re.compile(fr"\b{r_name_attr}\s+({r_name}\(.*\))")
+rx_method = re.compile(fr"^\s*({r_name_attr}\s+)+({r_name}\(.*\))")
 
 def main():
   tags = []
   start_time = time.time()
   args = sys.argv[1:]
   if len(args) == 0:
-    print("Not implemented: recursive tags")
-    raise SystemExit
-
-  for file_name in args:
-    if file_name.endswith(".cs"):
-      tags += get_tags_for_file(file_name)
-    else:
-      print(f"Warning: Skipping file '{file_name}'. Not '.cs' file type")
+    tags += get_tags_for_directory()
+  else:
+    for file_name in args:
+      if file_name.endswith(".cs"):
+        tags += get_tags_for_file(file_name)
+      else:
+        print(f"Warning: Skipping file '{file_name}'. Not '.cs' file type")
 
   print("--- tags start ---")
   print("\n".join(tags))
@@ -30,6 +29,19 @@ def main():
 
   print(f"Done in {time.time() - start_time}")
 
+def get_tags_for_directory(directory=None):
+  if not directory:
+    directory = os.getcwd()
+  tags = []
+  for item in os.listdir(directory):
+    abs_path = os.path.join(directory, item)
+    print(abs_path)
+    if os.path.isfile(abs_path) and item.endswith(".cs"):
+      tags += get_tags_for_file(abs_path)
+    elif os.path.isdir(abs_path):
+      tags += get_tags_for_directory(abs_path)
+  return tags
+
 def parse_class(line):
   match = rx_class.search(line)
   return match.group(1) if match else None
@@ -37,7 +49,7 @@ def parse_class(line):
 def parse_method(line):
   match = rx_method.search(line)
   if match:
-    capture = match.group(1)
+    capture = match.group(2)
     for symbol in ["<", "("]:
       index = capture.find(symbol)
       if index > -1:

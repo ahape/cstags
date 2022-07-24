@@ -21,16 +21,17 @@ method_tests = [
   ("b M<c>() where b : d { }", "M"),
   ("void M() => { }", "M"),
   ("[attr1] [attr2] void M() => { }", "M"),
+  ("var m = M()", None),
 ]
 
 for test_case, expectation  in class_tests:
   actual = cst.parse_class(test_case)
-  assert expectation == actual, f"{expectation} != {actual}"
+  assert expectation == actual, f"{test_case} -> {expectation} != {actual}"
 
 print("'class' parsing works")
 
 for test_case, expectation  in method_tests:
   actual = cst.parse_method(test_case)
-  assert expectation == actual, f"{expectation} != {actual}"
+  assert expectation == actual, f"{test_case} -> {expectation} != {actual}"
 
 print("'method' parsing works")
