@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import cstags as cst
 
-if __name__ != "__main__": raise SystemExit
+if __name__ != "__main__":
+  raise SystemExit
 
 class_tests = [
   ("class a { }", "a"),

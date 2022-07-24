@@ -68,17 +68,18 @@ def sanitize_capture(capture):
   return capture
 
 def add_class_tag(file_name, line, line_num, tags):
-  add_tag(parse_class(line), file_name, line_num, tags)
+  add_tag(parse_class(line), file_name, line, line_num, tags)
 
 def add_method_tag(file_name, line, line_num, tags):
-  add_tag(parse_method(line), file_name, line_num, tags)
+  add_tag(parse_method(line), file_name, line, line_num, tags)
 
 def add_interface_tag(file_name, line, line_num, tags):
-  add_tag(parse_interface(line), file_name, line_num, tags)
+  add_tag(parse_interface(line), file_name, line, line_num, tags)
 
-def add_tag(tag, file_name, line_num, tags):
+def add_tag(tag, file_name, line, line_num, tags):
   if tag:
-    tags.append("\t".join([tag, file_name, str(line_num)]))
+    col_num = line.find(tag) + 1
+    tags.append("\t".join([tag, file_name, f"call cursor({line_num},{col_num})"]))
 
 def get_tags_for_file(file_name):
   try:
