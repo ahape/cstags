@@ -104,7 +104,11 @@ def get_tags_for_file(file_name):
   with file:
     line_num, tags = 1, []
     while True:
-      line = file.readline()
+      try:
+        line = file.readline()
+      except:
+        sys.stderr.write(f"Failed to read line {line_num} of {file_name}. Skipping file")
+        return tags
       if not line:
         break
       add_class_tag(file_name, line, line_num, tags)
